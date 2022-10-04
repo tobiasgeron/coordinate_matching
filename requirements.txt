@@ -1,0 +1,4 @@
+numpy #tested with 1.19.2
+astropy #tested with 4.2
+pandas #tested with 1.2.0
+matplotlib #tested with 3.3.2
