@@ -68,55 +68,7 @@ def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = -1, xmax =
     plt.show()
 
 
-
-def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0):
-    '''
-    If limit != 0, will remove all targets who are separated more than that limit (in arcsec)
-    If remove_duplicates == True, will only keep the closest target
-    Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B)
-    
-    Faster to take the smaller catalog as catalog A
-    
-    Take care when debugging, a lot of different kinds of indices... Confusing.
-    '''
-    
-    Catalog_A = SkyCoord(ra=catalog_A[0]*u.degree, dec=catalog_A[1]*u.degree)
-    Catalog_B = SkyCoord(ra=catalog_B[0]*u.degree, dec=catalog_B[1]*u.degree)
-
-    idx, d2d, d3d = Catalog_A.match_to_catalog_sky(Catalog_B)
-    idx_final = list(idx)
-    d2d_arcsec = d2d.arcsec
-    
-    # Removing targets that are too far away, if specified
-    if limit > 0:
-        for i in range(len(d2d)):
-            # if it is within the limit
-            if d2d_arcsec[i] >= limit:
-                idx_final[i] = np.nan
-    
-    #Removing duplicates, if wanted
-    if remove_duplicates:
-        df = pd.DataFrame(idx_final)
-        idxs_dupl = np.where(df.duplicated(keep=False))[0]
-        #can drop NaN here? Don't think so, cause then indexing is wrong
-        
-        for idx_dupl in idxs_dupl:
-            if np.isnan(idx_final[idx_dupl]):
-                continue
-                
-            idxs = np.where(np.array(idx_final) == idx_final[idx_dupl])[0] #find the similar idxs
-            closest_idx = idxs[np.where(d2d[idxs] == np.min(d2d[idxs]))[0][0]] #find which ones of them is closest
-            
-            for j in idxs:
-                if j!= closest_idx:
-                    idx_final[j] = np.nan
-        
-    return np.array(idx_final), d2d, d3d
-
-
-
-
-def match_catalogs_recursively(catalog_A, catalog_B, remove_duplicates = True, limit = 0, recursive = True, 
+def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, recursive = True, 
                                 max_loops = 10, i_loop = 0):
     '''
     If limit != 0, will remove all targets who are separated more than that limit (in arcsec)
