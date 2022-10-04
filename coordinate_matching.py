@@ -22,7 +22,7 @@ from astropy import units as u
 ############
 
 
-def plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
+def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
 
     '''
     DESCRIPTION
@@ -98,7 +98,7 @@ def plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100,
     plt.show()
 
 
-catalog_match_plot_separation_radius = plot_separation_radius # for backwards compatibility
+catalog_match_plot_separation_radius = plot_separation_limit # for backwards compatibility
 
 
 def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, recursive = True, 
