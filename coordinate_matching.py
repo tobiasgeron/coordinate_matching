@@ -16,7 +16,7 @@ def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax 
     Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B).
 
     INPUTS
-    catalog_A (list): Must be a list of two arrays. First array is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
+    catalog_A (list): Must be a list of two lists. First list is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
     catalog_B (list): Same as catalog_A, but for the second catalog.
 
     OPTIONAL INPUTS
@@ -37,6 +37,11 @@ def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax 
 
 
     assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
+    
+    # Transform to np.array
+    catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
+    catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
+
 
     #set xmax depending on logscale
     if logscale:
