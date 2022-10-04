@@ -12,10 +12,9 @@ Make actual matchting function.
 
 import numpy as np
 from matplotlib import pyplot as plt
-from astropy.coordinates import SkyCoord
-from astropy.wcs import WCS
-from astropy import units as u
 import pandas as pd
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 
 
 ############
