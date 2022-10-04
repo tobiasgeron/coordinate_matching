@@ -24,7 +24,7 @@ from tqdm.notebook import tqdm
 ############
 
 
-def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
+def plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
 
     '''
     DESCRIPTION
@@ -43,7 +43,6 @@ def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax 
 
     OUTPUTS
     None
-
 
     NOTES
     For speed purposes, we do not removed duplicates or perform the matching iteratively in this function. 
@@ -99,6 +98,9 @@ def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax 
     ax.set_xlabel('Separation limit [arcsec]', fontsize = 16)
     ax.set_ylabel('Amount of matches found', fontsize = 16)
     plt.show()
+
+
+catalog_match_plot_separation_radius = plot_separation_radius # for backwards compatibility
 
 
 def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, recursive = True, 
@@ -227,6 +229,7 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     plt.xlabel(r'$\sqrt{ \Delta RA + \Delta DEC}$  [arcsec]', fontsize = 14)
     plt.ylabel('Frequency', fontsize = 14)
 
+    plt.tight_layout()
     plt.show()
 
 
