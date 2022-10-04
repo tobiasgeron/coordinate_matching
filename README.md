@@ -25,10 +25,10 @@ catalog_A (list): Must be a list of two lists. First list is the ra of the first
 catalog_B (list): Same as catalog_A, but for the second catalog.  
 
 OPTIONAL INPUTS  
-xmin (float): Minimum separation limit to be tested, in arcsec.  
-xmax (float): Maximum separation limit to be tested, in arcsec.  
-n (int): Amount of points to be sampled between xmin and xmax.  
-logscale (bool): Whether to plot axes in logscale.   
+xmin (float): Minimum separation limit to be tested, in arcsec. Default is 0.1 arcsec.
+xmax (float): Maximum separation limit to be tested, in arcsec. If left at -1, the code will choose an appropriate value automatically.
+n (int): Amount of points to be sampled between xmin and xmax.  Default is 100
+logscale (bool): Whether to plot axes in logscale. Default is False
 
 OUTPUTS  
 None  
