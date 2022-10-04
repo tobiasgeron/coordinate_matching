@@ -2,8 +2,8 @@
 Made by Tobias Géron on 4 Oct 2022, based on older code on my laptop. 
 
 TODO:
-Make plotting function for delta ra/dec
-Make actual matchting function.
+Make actual matching function.
+Add redshift in matching process?
 '''
 
 ###############
@@ -75,7 +75,7 @@ def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, 
     Catalog_A = SkyCoord(ra=catalog_A[0]*u.degree, dec=catalog_A[1]*u.degree)
     Catalog_B = SkyCoord(ra=catalog_B[0]*u.degree, dec=catalog_B[1]*u.degree)
 
-    idx, d2d, d3d = Catalog_A.match_to_catalog_sky(Catalog_B)
+    idx, d2d, _ = Catalog_A.match_to_catalog_sky(Catalog_B)
 
     n_matches = []
     for sep in sep_limits:
@@ -101,16 +101,29 @@ def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, 
 catalog_match_plot_separation_radius = plot_separation_limit # for backwards compatibility
 
 
-def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, recursive = True, 
-                                max_loops = 10, i_loop = 0):
+def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, recursive = True, max_loops = 10, i_loop = 0):
     '''
-    If limit != 0, will remove all targets who are separated more than that limit (in arcsec)
-    If remove_duplicates == True, will only keep the closest target
-    Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B)
-    
-    Significantly faster to take the smaller catalog as catalog A
-    
-    Take care when debugging, a lot of different kinds of indices... Confusing.
+    DESCRIPTION
+    Will map catalog_B to catalog_A (i.e. for every element in A, find closest element in B).
+
+    INPUTS
+    catalog_A (list): Must be a list of two lists. First list is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
+    catalog_B (list): Same as catalog_A, but for the second catalog.
+
+    OPTIONAL INPUTS
+    limit (float): The separation limit, in arcsec. All targets that are further away than this limit will be removed and replaced by np.nan. Default is 10 arcsec.
+    remove_duplicates (bool): Whether to remove duplicate matches. Default and recommended setting is 'True'.
+    recursive (bool): Whether to match recursively. Default and recommended setting is 'True'.
+    max_loops (int): How many iterations we can do for the recursive matching. Default is 10
+    i_loop (int): Which iteration we are currently on. 
+
+    OUTPUT
+    idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead.
+    d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B
+    n_removed (int): Used for recursive matching. It notes how many duplicates are removed in this iteration.
+
+    NOTES
+    The code is significantly faster if you choose the smaller catalog as catalog A! 
     '''
 
     # Transform to np.array
@@ -121,18 +134,16 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
     Catalog_A = SkyCoord(ra=catalog_A[0]*u.degree, dec=catalog_A[1]*u.degree)
     Catalog_B = SkyCoord(ra=catalog_B[0]*u.degree, dec=catalog_B[1]*u.degree)
 
-    idx, d2d, d3d = Catalog_A.match_to_catalog_sky(Catalog_B)
+    idx, d2d, _ = Catalog_A.match_to_catalog_sky(Catalog_B)
     idx_final = list(idx)
     d2d_arcsec = d2d.arcsec
     
-    # Removing targets that are too far away, if specified
-    if limit > 0:
-        for i in range(len(d2d)):
-            # if it is within the limit
-            if d2d_arcsec[i] >= limit:
-                idx_final[i] = np.nan
-                d2d[i] = np.nan
-                d3d[i] = np.nan
+    # Removing targets that are too far away,
+    for i in range(len(d2d)):
+        # if it is within the limit
+        if d2d_arcsec[i] >= limit:
+            idx_final[i] = np.nan
+            d2d[i] = np.nan
     
     n_removed = 0
     #Removing duplicates, if wanted
@@ -152,7 +163,6 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
                 if j!= closest_idx:
                     idx_final[j] = np.nan
                     d2d[j] = np.nan
-                    d3d[j] = np.nan
                     n_removed+=1
 
     idx = np.array(idx_final)
@@ -161,24 +171,23 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
         idxs_A_nomatch = np.where(np.isnan(idx))[0]
         idxs_B_nomatch = [i for i in range(len(catalog_B[0])) if i not in idx] #this takes a long time if catalog B is long, speed this up?
         
-        idx_temp, d2d_temp, d3d_temp, n_removed = match_catalogs([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
+        idx_temp, d2d_temp, n_removed = match_catalogs([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
                                                                 [catalog_B[0][idxs_B_nomatch], catalog_B[1][idxs_B_nomatch]],
                                                                 remove_duplicates = remove_duplicates, limit = limit, 
                                                                 recursive = recursive, i_loop = i_loop+1, max_loops = max_loops)
 
-        # Combine idx, d2d and d3d
+        # Combine idx and d2d
         for i in range(len(idx)):
             if i in idxs_A_nomatch: #if it didn't have a match before
                 j = np.where(idxs_A_nomatch == i)[0][0]
                 if ~np.isnan(idx_temp[j]): #if it has a match in the new search
                     idx[i] = idxs_B_nomatch[int(idx_temp[j])]
                     d2d[i] = d2d_temp[j]
-                    d3d[i] = d3d_temp[j]
 
 
 
         
-    return idx, d2d, d3d, n_removed
+    return idx, d2d, n_removed
 
 
 def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1, alpha = 0.3):
