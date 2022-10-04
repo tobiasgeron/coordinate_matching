@@ -1,3 +1,15 @@
+'''
+Made by Tobias Géron on 4 Oct 2022, based on older code on my laptop. 
+
+TODO:
+Make plotting function for delta ra/dec
+Make actual matchting function.
+'''
+
+###############
+### IMPORTS ###
+###############
+
 import numpy as np
 from matplotlib import pyplot as plt
 from astropy.coordinates import SkyCoord
@@ -6,6 +18,10 @@ from astropy import units as u
 import pandas as pd
 from tqdm.notebook import tqdm
 
+
+############
+### CODE ###
+############
 
 
 def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
@@ -166,6 +182,33 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
 
 
 
+def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
+    '''
+    '''
+    delta_ra = (catalog_A[0] - catalog_B[0]) * 3600
+    delta_dec = (catalog_A[1] - catalog_B[1]) * 3600
+    delta = np.sqrt(delta_ra**2 + delta_dec**2)
+
+    
+    plt.figure(figsize = (10,5))
+    plt.subplot(1,2,1)
+    plt.scatter(delta_ra,delta_dec)
+    plt.xlabel(r'RA$_{ \rm' + str(labels[0]) + r'}$ - RA$_{ \rm' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
+    plt.ylabel(r'DEC$_{ \rm' + str(labels[0]) + r'}$ - DEC$_{ \rm' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
+    
+
+    plt.subplot(1,2,2)
+    plt.hist(delta)
+    plt.xlabel(r'$\sqrt{ \Delta RA + \Delta DEC}$  [arcsec]', fontsize = 14)
+    plt.ylabel('Frequency', fontsize = 14)
+
+    plt.show()
+
+
+
+
+
+
 
 def sexagesimal_to_degree(ra,dec):
     '''
@@ -174,3 +217,5 @@ def sexagesimal_to_degree(ra,dec):
     c = SkyCoord(ra = ra, dec = dec,unit=(u.hourangle, u.deg))
     
     return c.ra.degree, c.dec.degree
+
+
