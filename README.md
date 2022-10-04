@@ -14,7 +14,9 @@ The Galaxy Zoo DECaLS coordinates can be found [here](https://arxiv.org/abs/2102
 This code has been tested with python 3.7.9, astropy 4.2, pandas 1.2.0, numpy 1.19.2, matplotlib 3.3.2.
 
 
-### Calling sequence of main functions
+### Calling sequence
+
+##### plot_separation_limit
 
 There are two main functions. The first helps to find the ideal separation limit that best suits the two catalogs:
 
@@ -25,21 +27,22 @@ catalog_A (list): Must be a list of two lists. First list is the ra of the first
 catalog_B (list): Same as catalog_A, but for the second catalog.  
 
 OPTIONAL INPUTS  
-xmin (float): Minimum separation limit to be tested, in arcsec. Default is 0.1 arcsec.
-xmax (float): Maximum separation limit to be tested, in arcsec. If left at -1, the code will choose an appropriate value automatically.
-n (int): Amount of points to be sampled between xmin and xmax.  Default is 100.
-logscale (bool): Whether to plot axes in logscale. Default is False.
+xmin (float): Minimum separation limit to be tested, in arcsec. Default is 0.1 arcsec.  
+xmax (float): Maximum separation limit to be tested, in arcsec. If left at -1, the code will choose an appropriate value automatically.  
+n (int): Amount of points to be sampled between xmin and xmax.  Default is 100.  
+logscale (bool): Whether to plot axes in logscale. Default is False.  
 
 OUTPUTS  
 None  
 
-NOTES
+NOTES  
 For speed purposes, we do not removed duplicates or perform the matching iteratively in this function. 
 This is done in the more detailed `match_catalogs()` function. Therefore, the amount of matches shown is 
 only an estimate and should only serve as a rough guideline. 
 
-
 The output plot can be used to determine the ideal separation limit. Please refer to the example Jupyter Notebook for more details.
+
+##### match_catalogs
 
 After an ideal separation limit is determined, this next function actually does the matching:
 
@@ -60,8 +63,8 @@ max_loops (int): How many iterations we can do for the recursive matching. Defau
 i_loop (int): Which iteration we are currently on.   
 
 OUTPUT  
-idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead. 
-d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B. 
+idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead.   
+d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B.   
 n_removed (int): Used for recursive matching. It notes how many duplicates are removed in this iteration.  
 
 NOTES  
