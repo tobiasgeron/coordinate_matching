@@ -96,6 +96,11 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
     
     Take care when debugging, a lot of different kinds of indices... Confusing.
     '''
+
+    # Transform to np.array
+    catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
+    catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
+
     
     Catalog_A = SkyCoord(ra=catalog_A[0]*u.degree, dec=catalog_A[1]*u.degree)
     Catalog_B = SkyCoord(ra=catalog_B[0]*u.degree, dec=catalog_B[1]*u.degree)
