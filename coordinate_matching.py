@@ -16,7 +16,6 @@ from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 from astropy import units as u
 import pandas as pd
-from tqdm.notebook import tqdm
 
 
 ############
@@ -161,7 +160,7 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
     if recursive and n_removed > 0 and i_loop < max_loops:
         #Find targets in Catalog A and B without a match (maybe only do ones in n_removed?)
         idxs_A_nomatch = np.where(np.isnan(idx))[0]
-        idxs_B_nomatch = [i for i in tqdm(range(len(catalog_B[0]))) if i not in idx] #this takes a long time if catalog B is long, speed this up?
+        idxs_B_nomatch = [i for i in range(len(catalog_B[0])) if i not in idx] #this takes a long time if catalog B is long, speed this up?
         
         idx_temp, d2d_temp, d3d_temp, n_removed = match_catalogs([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
                                                                 [catalog_B[0][idxs_B_nomatch], catalog_B[1][idxs_B_nomatch]],
@@ -169,7 +168,7 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
                                                                 recursive = recursive, i_loop = i_loop+1, max_loops = max_loops)
 
         # Combine idx, d2d and d3d
-        for i in tqdm(range(len(idx))):
+        for i in range(len(idx)):
             if i in idxs_A_nomatch: #if it didn't have a match before
                 j = np.where(idxs_A_nomatch == i)[0][0]
                 if ~np.isnan(idx_temp[j]): #if it has a match in the new search
