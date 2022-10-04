@@ -8,31 +8,43 @@ from tqdm.notebook import tqdm
 
 
 
-def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = -1, xmax = -1, n = 100, logscale=False):
+def catalog_match_plot_separation_radius(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
 
     '''
-    This function will plot an easy figure where you can see which separation limit is appropriate for you two catalogs. 
-    Catalog_A must be a list of 2 arrays. First element is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.
-    Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B)
-    
-    xmin and xmax are the minimum and maximum separation limits to be tested, in arcsec.
-    n is the amount of datapoints that should be tested. 
+    DESCRIPTION
+    This function will plot a figure where you can see which separation limit is appropriate to use while matching two catalogs.
+    Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B).
 
-    logscale will put both axes on logscale. Recommended only if you want to probe until degree range. If turned on, will probe between 1 arcsec and 10 degs.
+    INPUTS
+    catalog_A (list): Must be a list of two arrays. First array is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
+    catalog_B (list): Same as catalog_A, but for the second catalog.
+
+    OPTIONAL INPUTS
+    xmin (float): Minimum separation limit to be tested, in arcsec.
+    xmax (float): Maximum separation limit to be tested, in arcsec.
+    n (int): Amount of points to be sampled between xmin and xmax.
+    logscale (bool): Whether to plot axes in logscale. 
+
+    OUTPUTS
+    None
+
+
+    NOTES
+    For speed purposes, we do not removed duplicates or perform the matching iteratively in this function. 
+    This is done in the more detailed `match_catalogs()` function. Therefore, the amount of matches shown is 
+    only an estimate and should only serve as a rough guideline. 
     '''
 
 
-    assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First element is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
+    assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
 
-    #set limits of sep_limit correctly
+    #set xmax depending on logscale
     if logscale:
         if xmax == -1:
             xmax = 60*60*10 #so 10 degrees
     else:
         if xmax == -1:
             xmax = 50
-    if xmin == -1:
-        xmin = 0.1
 
 
     #space sep_limits correctly
@@ -123,7 +135,7 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
         idxs_A_nomatch = np.where(np.isnan(idx))[0]
         idxs_B_nomatch = [i for i in tqdm(range(len(catalog_B[0]))) if i not in idx] #this takes a long time if catalog B is long, speed this up?
         
-        idx_temp, d2d_temp, d3d_temp, n_removed = match_catalogs_recursively([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
+        idx_temp, d2d_temp, d3d_temp, n_removed = match_catalogs([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
                                                                 [catalog_B[0][idxs_B_nomatch], catalog_B[1][idxs_B_nomatch]],
                                                                 remove_duplicates = remove_duplicates, limit = limit, 
                                                                 recursive = recursive, i_loop = i_loop+1, max_loops = max_loops)
@@ -141,3 +153,14 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
 
         
     return idx, d2d, d3d, n_removed
+
+
+
+
+def sexagesimal_to_degree(ra,dec):
+    '''
+    Using astropy to transform coordinates from sexagesimal (in hms for ra and dms for dec) to degrees
+    '''
+    c = SkyCoord(ra = ra, dec = dec,unit=(u.hourangle, u.deg))
+    
+    return c.ra.degree, c.dec.degree
