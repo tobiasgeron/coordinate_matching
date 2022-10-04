@@ -36,8 +36,8 @@ def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, 
     OPTIONAL INPUTS
     xmin (float): Minimum separation limit to be tested, in arcsec. Default is 0.1 arcsec.
     xmax (float): Maximum separation limit to be tested, in arcsec. If left at -1, the code will choose an appropriate value automatically.
-    n (int): Amount of points to be sampled between xmin and xmax.  Default is 100
-    logscale (bool): Whether to plot axes in logscale. Default is False
+    n (int): Amount of points to be sampled between xmin and xmax.  Default is 100.
+    logscale (bool): Whether to plot axes in logscale. Default is False.
 
     OUTPUTS
     None
@@ -114,12 +114,12 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     limit (float): The separation limit, in arcsec. All targets that are further away than this limit will be removed and replaced by np.nan. Default is 10 arcsec.
     remove_duplicates (bool): Whether to remove duplicate matches. Default and recommended setting is 'True'.
     recursive (bool): Whether to match recursively. Default and recommended setting is 'True'.
-    max_loops (int): How many iterations we can do for the recursive matching. Default is 10
+    max_loops (int): How many iterations we can do for the recursive matching. Default is 10.
     i_loop (int): Which iteration we are currently on. 
 
     OUTPUT
     idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead.
-    d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B
+    d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B.
     n_removed (int): Used for recursive matching. It notes how many duplicates are removed in this iteration.
 
     NOTES
