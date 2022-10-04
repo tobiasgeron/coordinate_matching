@@ -108,7 +108,7 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
     If remove_duplicates == True, will only keep the closest target
     Will match catalog_B to catalog_A (i.e. for every element in A, find closest element in B)
     
-    Faster to take the smaller catalog as catalog A
+    Significantly faster to take the smaller catalog as catalog A
     
     Take care when debugging, a lot of different kinds of indices... Confusing.
     '''
@@ -181,10 +181,35 @@ def match_catalogs(catalog_A, catalog_B, remove_duplicates = True, limit = 0, re
     return idx, d2d, d3d, n_removed
 
 
+def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1, alpha = 0.3):
+    assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
+    
+    # Transform to np.array
+    catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
+    catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
+
+    plt.scatter(catalog_B[0], catalog_B[1], s=markersize, alpha=alpha, label = labels[1]) #plotting B first, as we assume B is the smalelr catalog
+    plt.scatter(catalog_A[0], catalog_A[1], s=markersize, alpha=alpha, label = labels[0])
+
+    plt.xlabel('RA [deg]')
+    plt.ylabel('DEC [deg]')
+    
+    plt.legend()
+    
+    plt.show()
+
+
 
 def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     '''
     '''
+
+    assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
+    
+    # Transform to np.array
+    catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
+    catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
+
     delta_ra = (catalog_A[0] - catalog_B[0]) * 3600
     delta_dec = (catalog_A[1] - catalog_B[1]) * 3600
     delta = np.sqrt(delta_ra**2 + delta_dec**2)
