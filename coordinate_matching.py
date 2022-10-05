@@ -44,7 +44,7 @@ def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, 
     None
 
     NOTES
-    For speed purposes, we do not removed duplicates or perform the matching iteratively in this function. 
+    For speed purposes, we do not remove duplicates or perform the matching iteratively in this function. 
     This is done in the more detailed `match_catalogs()` function. Therefore, the amount of matches shown is 
     only an estimate and should only serve as a rough guideline. 
     '''
@@ -191,7 +191,28 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     return idx, d2d, n_removed
 
 
-def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1, alpha = 0.3):
+def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 0.3):
+    '''
+    DESCRIPTION
+    Takes the coordinates of both catalogs and plots them on the sky. This helps visualise whether they actually overlap.
+
+    INPUTS
+    catalog_A (list): Must be a list of two lists. First list is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
+    catalog_B (list): Same as catalog_A, but for the second catalog.
+
+    OPTIONAL INPUTS
+    labels (list): List of strings. Will be the labels used in subscript for the two catalogs. Default is [1,2].
+    marksersize (float): Size of the markers. Default is 1.0.
+    alpha (float): opacity of the markers. Default is 0.3.
+
+    OUTPUT
+    None
+
+    NOTES
+    I'm assuming catalog_A is the smaller one (as advised above). Therefore, I'm plotting catalog_B first, so more of catalog_A is visible.
+    
+    '''
+
     assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
     
     # Transform to np.array
@@ -212,6 +233,22 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1, alpha = 0.
 
 def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     '''
+    DESCRIPTION
+    After matching, this function helps to check how accurate the matches are.
+
+    INPUTS
+    catalog_A (list): Must be a list of two lists. First list is the ra of the first catalog, second is dec. Units for ra/dec must be deg, not sexagesimal!
+    catalog_B (list): Same as catalog_A, but for the second catalog. It is implied that this is after matching the catalogs, so that the first element in catalog_B is matched to the first element in catalog_A, and so on.
+
+    OPTIONAL INPUTS
+    labels (list): List of strings. Will be the labels used in subscript for the two catalogs. Default is [1,2].
+
+    OUTPUT
+    None
+
+    NOTES
+    It is implied that this is after matching the catalogs, so that the first element in catalog_B is matched to the first element in catalog_A, and so on.
+    
     '''
 
     assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
@@ -220,6 +257,7 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
     catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
 
+    # Can just use astropy functions here to be more acurate? Shouldn't make much of a difference.
     delta_ra = (catalog_A[0] - catalog_B[0]) * 3600
     delta_dec = (catalog_A[1] - catalog_B[1]) * 3600
     delta = np.sqrt(delta_ra**2 + delta_dec**2)
@@ -248,7 +286,22 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
 
 def sexagesimal_to_degree(ra,dec):
     '''
-    Using astropy to transform coordinates from sexagesimal (in hms for ra and dms for dec) to degrees
+    DESCRIPTION
+    Using astropy to transform coordinates from sexagesimal (in hms for ra and dms for dec) to degrees.
+
+    INPUTS
+    ra (str): ra in sexagesimal notation
+    dec (str): dec in sexagesimal notation
+
+    OPTIONAL INPUTS
+    
+
+    OUTPUT
+    ra (float): ra in degrees
+    dec (float): dec in degrees
+
+    NOTES
+    
     '''
     c = SkyCoord(ra = ra, dec = dec,unit=(u.hourangle, u.deg))
     
