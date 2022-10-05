@@ -4,6 +4,7 @@ Made by Tobias Géron on 4 Oct 2022, based on older code on my laptop.
 TODO:
 Make actual matching function.
 Add redshift in matching process?
+Automate the finding of separation limit? Can do gaussian smoothing, apply differential and see where is maximum. That'll probably be a good first approximation.
 '''
 
 ###############
