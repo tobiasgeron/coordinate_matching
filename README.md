@@ -3,9 +3,8 @@
 
 ### Description
 
-This code is created to facilitate matching different catalogs on coordinates. It is mostly a fancy wrapper around Astropy's `match_to_catalog_sky()` method. However, this code solves a few more problems and provides additional functionality to help the matching process.
-In short: this codes helps to find the optimal separation limit for matching catalogs and will remove matches that are separated more than this value.
-It also has the option to remove duplicates from our matching process and the process is done iteratively, to make sure no matches are lost. 
+This code is created to facilitate matching different catalogs on sky coordinates. It is mostly a fancy wrapper around Astropy's `match_to_catalog_sky()` method. However, this code solves a few more problems and provides additional functionality to help the matching process.
+In short: this codes helps to find the optimal separation limit for matching catalogs and will automatically remove matches that are separated more than this value. It also has the option to remove duplicates from our matching process and the process is done iteratively, to make sure no matches are lost. 
 
 An detailed example can be found in the Jupyter Notebook. It shows how to match MaNGA to Galaxy Zoo DECaLS, based on coordinates. 
 I obtained the MaNGA coordinates from [MaNGA](https://www.sdss.org/dr17/manga/) drpall, DR17. 
@@ -65,7 +64,7 @@ i_loop (int): Which iteration we are currently on.
 OUTPUT  
 idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead.   
 d2d (list): List of length equal to catalog_A. Contains on-sky distance to match in catalog_B.   
-n_removed (int): Used for recursive matching. It notes how many duplicates are removed in this iteration.  
+n_removed (int): Used during recursive matching. It notes how many duplicates are removed in this iteration.  
 
 NOTES  
 The code is significantly faster if you choose the smaller catalog as catalog A!  
@@ -77,7 +76,7 @@ More details can be found in the Jupyter Notebook, as well as the `.py` file con
 
 
 
-### TODO:
+### TODO:
 Explain what recursive matching actually does..
 
 
