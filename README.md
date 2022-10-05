@@ -36,7 +36,7 @@ OUTPUTS
 None  
 
 NOTES  
-For speed purposes, we do not removed duplicates or perform the matching iteratively in this function. 
+For speed purposes, we do not remove duplicates or perform the matching iteratively in this function. 
 This is done in the more detailed `match_catalogs()` function. Therefore, the amount of matches shown is 
 only an estimate and should only serve as a rough guideline. 
 
