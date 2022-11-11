@@ -4,7 +4,7 @@
 ### Description
 
 This code is created to facilitate matching different catalogs on sky coordinates. It is mostly a fancy wrapper around Astropy's `match_to_catalog_sky()` method. However, this code solves a few more problems and provides additional functionality to help the matching process.
-In short: this codes helps to find the optimal separation limit for matching catalogs and will automatically remove matches that are separated more than this value. It also has the option to remove duplicates from our matching process and the process is done iteratively, to make sure no matches are lost. 
+In short: this codes helps to find the optimal separation limit for matching catalogs and will automatically remove matches that are separated more than this value. It also has the option to remove duplicates from our matching process and the process is done recursively, to make sure no matches are lost. 
 
 An detailed example can be found in the Jupyter Notebook. It shows how to match MaNGA to Galaxy Zoo DECaLS, based on coordinates. 
 I obtained the MaNGA coordinates from [MaNGA](https://www.sdss.org/dr17/manga/) drpall, DR17. 
