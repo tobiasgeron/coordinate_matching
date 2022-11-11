@@ -22,7 +22,6 @@ from astropy import units as u
 ### CODE ###
 ############
 
-
 def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, logscale=False):
 
     '''
@@ -230,7 +229,6 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 
     plt.show()
 
 
-
 def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     '''
     DESCRIPTION
@@ -279,11 +277,6 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     plt.show()
 
 
-
-
-
-
-
 def sexagesimal_to_degree(ra,dec):
     '''
     DESCRIPTION
@@ -306,5 +299,3 @@ def sexagesimal_to_degree(ra,dec):
     c = SkyCoord(ra = ra, dec = dec,unit=(u.hourangle, u.deg))
     
     return c.ra.degree, c.dec.degree
-
-
