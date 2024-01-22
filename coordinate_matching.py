@@ -217,9 +217,11 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 
     # Transform to np.array
     catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
     catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
-
-    plt.scatter(catalog_B[0], catalog_B[1], s=markersize, alpha=alpha, label = labels[1]) #plotting B first, as we assume B is the smalelr catalog
-    plt.scatter(catalog_A[0], catalog_A[1], s=markersize, alpha=alpha, label = labels[0])
+    
+    if len(catalog_B[0]) > 0:
+        plt.scatter(catalog_B[0], catalog_B[1], s=markersize, alpha=alpha, label = labels[1]) #plotting B first, as we assume B is the smalelr catalog
+    if len(catalog_A[0]) > 0:
+        plt.scatter(catalog_A[0], catalog_A[1], s=markersize, alpha=alpha, label = labels[0])
 
     plt.xlabel('RA [deg]')
     plt.ylabel('DEC [deg]')
