@@ -190,7 +190,51 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     return idx, d2d, n_removed
 
 
-def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 0.3):
+def merge_catalogs(catalog_A, catalog_B, idx, suffixes = ('_A','_B')):
+    '''
+    DESCRIPTION
+    After doing match_catalogs(catalog_A, catalog_B), this function takes the output of that and actually merges the catalogs. 
+    Assumes both catalogs are pandas dfs.
+
+    INPUTS:
+    catalog_A (pandas DataFrame): first catalog
+    catalog_B (pandas DataFrame): second catalog
+    idx: first output of match_catalogs(catalog_A, catalog_B). For every row in catalog_A, maps to a row in catalog B. This is what 
+    we use to merge.
+
+    OPTIONAL INPUTS:
+    suffixes (list): if there are duplicate columns, what suffixes to use for each catalog.
+
+    NOTES
+    I'm assuming catalog_A is the smaller one (as advised above). 
+    This code also assumes that there is no "index" column in either df. If so, it will be overwritten.
+    
+    '''
+
+    assert len(idx) == len(catalog_A),'The length of idx should be the same as catalog A. For every row in catalog_A, idx should map to a row in catalog B. This is what we use to merge.'
+
+
+    # Add index to catalog_B
+    catalog_B['index'] = list(range(len(catalog_B)))
+
+    # Remove all in catalog A where idx is np.nan, so no match was found
+    ind_selection = np.where(np.isnan(idx))[0]
+    catalog_A = catalog_A.drop(ind_selection,axis=0)
+    catalog_A = catalog_A.reset_index(drop=True)
+
+    # Get rid of all the NaN entries
+    idx_denan = [int(i) for i in idx if ~np.isnan(i)]
+    
+    # Merge
+    catalog_A['index'] = list(catalog_B['index'][idx_denan]) #Can just do idx_denan?
+    catalog_C = catalog_A.merge(catalog_B,left_on='index',right_on='index', how='inner', suffixes = suffixes)
+    catalog_C = catalog_C.drop(columns=['index'])
+
+    return catalog_C
+
+
+
+def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 0.3, frac_plot = 1):
     '''
     DESCRIPTION
     Takes the coordinates of both catalogs and plots them on the sky. This helps visualise whether they actually overlap.
@@ -203,6 +247,8 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 
     labels (list): List of strings. Will be the labels used in subscript for the two catalogs. Default is [1,2].
     marksersize (float): Size of the markers. Default is 1.0.
     alpha (float): opacity of the markers. Default is 0.3.
+    frac_plot (float): between 0 and 1. Determines fraction of catalog to actually plot. For large catalogs, 
+    plotting >1M dots will take too much time, and is not useful. If you just want an idea of where the footprint is, you can reduce this.
 
     OUTPUT
     None
@@ -210,6 +256,8 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 
     NOTES
     I'm assuming catalog_A is the smaller one (as advised above). Therefore, I'm plotting catalog_B first, so more of catalog_A is visible.
     
+    TODO
+    Can add give option to only plot a fraction of the catalogs. Will speed up larger catalogs
     '''
 
     assert len(catalog_A) == 2 and len(catalog_B) == 2, 'Catalog_A must be a list of 2 arrays. First array is ra, second is dec. Idem for catalog_B. Units for ra/dec must be deg.'
@@ -217,6 +265,16 @@ def plot_on_sky(catalog_A, catalog_B, labels = [1,2], markersize = 1.0, alpha = 
     # Transform to np.array
     catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
     catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
+
+
+    # Frac plot
+    if frac_plot != 1:
+        inds_A = np.random.choice(range(len(catalog_A[0])), replace = False, size = int(frac_plot * len(catalog_A[0])))
+        catalog_A = np.array(catalog_A).T[inds_A].T
+
+        inds_B = np.random.choice(range(len(catalog_B[0])), replace = False, size = int(frac_plot * len(catalog_B[0])))
+        catalog_B = np.array(catalog_B).T[inds_B].T
+    
     
     if len(catalog_B[0]) > 0:
         plt.scatter(catalog_B[0], catalog_B[1], s=markersize, alpha=alpha, label = labels[1]) #plotting B first, as we assume B is the smalelr catalog
@@ -266,8 +324,8 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     plt.figure(figsize = (10,5))
     plt.subplot(1,2,1)
     plt.scatter(delta_ra,delta_dec)
-    plt.xlabel(r'RA$_{ \rm' + str(labels[0]) + r'}$ - RA$_{ \rm' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
-    plt.ylabel(r'DEC$_{ \rm' + str(labels[0]) + r'}$ - DEC$_{ \rm' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
+    plt.xlabel(r'RA$_{' + str(labels[0]) + r'}$ - RA$_{' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
+    plt.ylabel(r'DEC$_{' + str(labels[0]) + r'}$ - DEC$_{' + str(labels[1]) + '}$ [arcsec]', fontsize = 14)
     
 
     plt.subplot(1,2,2)
