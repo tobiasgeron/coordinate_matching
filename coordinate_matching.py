@@ -316,9 +316,19 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
 
     # Can just use astropy functions here to be more acurate? Shouldn't make much of a difference.
-    delta_ra = (catalog_A[0] - catalog_B[0]) * 3600
-    delta_dec = (catalog_A[1] - catalog_B[1]) * 3600
-    delta = np.sqrt(delta_ra**2 + delta_dec**2)
+    # delta_ra = (catalog_A[0] - catalog_B[0]) * 3600
+    # delta_dec = (catalog_A[1] - catalog_B[1]) * 3600
+    # delta = np.sqrt(delta_ra**2 + delta_dec**2)
+
+    # use Astropy instead
+    coords_A = SkyCoord(ra=catalog_A[0]*u.deg, dec=catalog_A[1]*u.deg)
+    coords_B = SkyCoord(ra=catalog_B[0]*u.deg, dec=catalog_B[1]*u.deg)
+
+    delta_ra, delta_dec = coords_A.spherical_offsets_to(coords_N)
+    delta_ra = delta_ra.to(u.arcsec).value
+    delta_dec = delta_dec.to(u.arcsec).value
+
+    delta = coords_A.separation(coords_B).to(u.arcsec).value
 
     
     plt.figure(figsize = (10,5))
@@ -336,6 +346,7 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     plt.tight_layout()
     plt.show()
 
+    
 
 def sexagesimal_to_degree(ra,dec):
     '''
