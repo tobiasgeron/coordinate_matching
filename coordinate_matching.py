@@ -324,7 +324,7 @@ def plot_coordinate_difference(catalog_A, catalog_B, labels = [1,2]):
     coords_A = SkyCoord(ra=catalog_A[0]*u.deg, dec=catalog_A[1]*u.deg)
     coords_B = SkyCoord(ra=catalog_B[0]*u.deg, dec=catalog_B[1]*u.deg)
 
-    delta_ra, delta_dec = coords_A.spherical_offsets_to(coords_N)
+    delta_ra, delta_dec = coords_A.spherical_offsets_to(coords_B)
     delta_ra = delta_ra.to(u.arcsec).value
     delta_dec = delta_dec.to(u.arcsec).value
 
