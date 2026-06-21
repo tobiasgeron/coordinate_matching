@@ -16,6 +16,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 from astropy.coordinates import SkyCoord
 from astropy import units as u
+from tqdm.auto import tqdm
 
 
 ############
@@ -101,7 +102,8 @@ def plot_separation_limit(catalog_A, catalog_B, xmin = 0.1, xmax = -1, n = 100, 
 catalog_match_plot_separation_radius = plot_separation_limit # for backwards compatibility
 
 
-def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, recursive = True, max_loops = 10, i_loop = 0):
+
+def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, recursive = True, max_loops = 10, i_loop = 0, verbose = 0):
     '''
     DESCRIPTION
     Will map catalog_B to catalog_A (i.e. for every element in A, find closest element in B).
@@ -115,7 +117,7 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     remove_duplicates (bool): Whether to remove duplicate matches. Default and recommended setting is 'True'.
     recursive (bool): Whether to match recursively. Default and recommended setting is 'True'.
     max_loops (int): How many iterations we can do for the recursive matching. Default is 10.
-    i_loop (int): Which iteration we are currently on. 
+    i_loop (int): Which iteration we are currently on. Used for recursive matching.
 
     OUTPUT
     idx (list): List of length equal to catalog_A. Every entry has the index of corresponding row in catalog_B. If no match is found, entry is np.nan instead.
@@ -126,6 +128,15 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     The code is significantly faster if you choose the smaller catalog as catalog A! 
     '''
 
+
+    
+    disable_tqdm = True
+    if verbose > 0:
+        print(f'Matching loop {i_loop}.')
+        print(f'Catalogue sizes: A = {len(catalog_A[0])}; B = {len(catalog_B[0])}')
+        disable_tqdm = False
+
+
     # Transform to np.array
     catalog_A = [np.array(catalog_A[0]), np.array(catalog_A[1])]
     catalog_B = [np.array(catalog_B[0]), np.array(catalog_B[1])]
@@ -134,16 +145,22 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
     Catalog_A = SkyCoord(ra=catalog_A[0]*u.degree, dec=catalog_A[1]*u.degree)
     Catalog_B = SkyCoord(ra=catalog_B[0]*u.degree, dec=catalog_B[1]*u.degree)
 
+
     idx, d2d, _ = Catalog_A.match_to_catalog_sky(Catalog_B)
     idx_final = list(idx)
     d2d_arcsec = d2d.arcsec
-    
+
+        
     # Removing targets that are too far away,
-    for i in range(len(d2d)):
+    if verbose > 0:
+        print(f'Removing matches with distance > {limit} arcsec.')
+    for i in tqdm(range(len(d2d)), disable = disable_tqdm):
         # if it is within the limit
         if d2d_arcsec[i] >= limit:
             idx_final[i] = np.nan
             d2d[i] = np.nan
+
+
     
     n_removed = 0
     #Removing duplicates, if wanted
@@ -151,8 +168,14 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
         df = pd.DataFrame(idx_final)
         idxs_dupl = np.where(df.duplicated(keep=False))[0]
         #can drop NaN here? Don't think so, cause then indexing is wrong
+
+
+        if verbose > 0:
+            print(f'Removing duplicates in this loop.')
+
         
-        for idx_dupl in idxs_dupl:
+        
+        for idx_dupl in tqdm(idxs_dupl, disable = disable_tqdm):
             if np.isnan(idx_final[idx_dupl]):
                 continue
                 
@@ -165,17 +188,37 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
                     d2d[j] = np.nan
                     n_removed+=1
 
+    
+
+
+    if verbose > 0:
+        print(f'Removed {n_removed} duplicates.')
+        print()
+
+
     idx = np.array(idx_final)
     if recursive and n_removed > 0 and i_loop < max_loops:
         #Find targets in Catalog A and B without a match (maybe only do ones in n_removed?)
         idxs_A_nomatch = np.where(np.isnan(idx))[0]
-        idxs_B_nomatch = [i for i in range(len(catalog_B[0])) if i not in idx] #this takes a long time if catalog B is long, speed this up?
+        #idxs_B_nomatch = [i for i in range(len(catalog_B[0])) if i not in idx] #this takes a long time if catalog B is long, speed this up?
+
+        idx_set = set(idx)
+        idxs_B_nomatch = [i for i in range(len(catalog_B[0])) if i not in idx_set]
+
+
         
+
+
+    
         idx_temp, d2d_temp, n_removed = match_catalogs([catalog_A[0][idxs_A_nomatch], catalog_A[1][idxs_A_nomatch]],
                                                                 [catalog_B[0][idxs_B_nomatch], catalog_B[1][idxs_B_nomatch]],
                                                                 remove_duplicates = remove_duplicates, limit = limit, 
-                                                                recursive = recursive, i_loop = i_loop+1, max_loops = max_loops)
+                                                                recursive = recursive, i_loop = i_loop+1, max_loops = max_loops,
+                                                                verbose = verbose)
 
+
+
+        
         # Combine idx and d2d
         for i in range(len(idx)):
             if i in idxs_A_nomatch: #if it didn't have a match before
@@ -185,9 +228,9 @@ def match_catalogs(catalog_A, catalog_B, limit = 10., remove_duplicates = True, 
                     d2d[i] = d2d_temp[j]
 
 
-
         
     return idx, d2d, n_removed
+
 
 
 def merge_catalogs(catalog_A, catalog_B, idx, suffixes = ('_A','_B')):
