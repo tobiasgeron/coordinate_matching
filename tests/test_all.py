@@ -26,7 +26,7 @@ class TestMatchCatalogs:
         from coordinate_matching import match_catalogs
 
         epsilon = 1e-4
-        ra1, dec1 = [1,2], [4,50]
+        ra1, dec1 = [1,2], [4,5]
         ra2, dec2 = [1+epsilon,2-epsilon], [4+epsilon,5-epsilon]
 
         df1 = pd.DataFrame({'ra':ra1,'dec':dec1})
