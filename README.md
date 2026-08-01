@@ -10,16 +10,15 @@ An detailed example can be found in the Jupyter Notebook. It shows how to match 
 I obtained the MaNGA coordinates from [MaNGA](https://www.sdss.org/dr17/manga/) drpall, DR17. 
 The Galaxy Zoo DECaLS coordinates can be found [here](https://arxiv.org/abs/2102.08414). Both were taken on 4 Oct 2022.
 
-This code has been tested with python 3.7.9, astropy 4.2, pandas 1.2.0, numpy 1.19.2, matplotlib 3.3.2.
 
 
 ### How to install
-The simplest way to use this code is to just download the `coordinate_matching.py` file and simply import it in your code. Alternatively, you can [git clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository. If you are having issues with running the code, I would recommend to [create a new conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Then, after activating the new environment and moving into the cloned repository, run this command to install the correct dependencies:
+The simplest way to use this code is to just download the `coordinate_matching.py` file and simply import it in your code. Alternatively, you can [git clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository. If you are having issues with running the code, I would recommend to [create a new conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) with python 3.14. Then, after activating the new environment and moving into the cloned repository, run this command to install the correct dependencies:
 ```
 pip install -r requirements.txt
 ```
 
-This code was last tested with python 3.7.9, astropy 4.2, pandas 1.2.0, numpy 1.19.2, matplotlib 3.3.2.
+This code was last tested with python 3.14. The core dependencies are astropy, pandas, numpy, matplotlib, tqdm, pytest, and pytest-cov.
 
 ### Calling sequence
 
