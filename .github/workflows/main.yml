@@ -31,4 +31,10 @@ jobs:
 
     - name: Test with PyTest
       run: |
-        python -m pytest --cov=coordinate_matching tests/test_all.py
+        python -m pytest --cov=coordinate_matching tests/test_all.py --cov-report=xml tests/test_all.py
+
+    # Upload coverage report to Codecov
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}

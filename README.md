@@ -1,6 +1,7 @@
 # Coordinate_matching
 
 [![CI](https://github.com/tobiasgeron/coordinate_matching/actions/workflows/main.yml/badge.svg)](https://github.com/tobiasgeron/coordinate_matching/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/tobiasgeron/coordinate_matching/graph/badge.svg)](https://codecov.io/gh/tobiasgeron/coordinate_matching)
 
 ### Description
 
