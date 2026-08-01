@@ -4,3 +4,4 @@ pandas #tested with 1.2.0
 matplotlib #tested with 3.3.2
 pytest
 pytest-cov
+tqdm
