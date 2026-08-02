@@ -22,7 +22,7 @@ Alternatively, I recommend [git cloning](https://docs.github.com/en/repositories
 
 ```
 git clone https://github.com/tobiasgeron/coordinate_matching.git
-cd flexAE
+cd coordinate_matching
 ```
 
 and [creating a separate conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) for coordinate_matching and activating it:
