@@ -15,12 +15,31 @@ The Galaxy Zoo DECaLS coordinates can be found [here](https://arxiv.org/abs/2102
 
 
 ### How to install
-The simplest way to use this code is to just download the `coordinate_matching.py` file and simply import it in your code. Alternatively, you can [git clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository. If you are having issues with running the code, I would recommend to [create a new conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) with python 3.14. Then, after activating the new environment and moving into the cloned repository, run this command to install the correct dependencies:
+
+The simplest way to use this code is to just download the `coordinate_matching.py` file, copy-paste in your project and import it directly. However, this can be prone to dependency conflicts. 
+
+Alternatively, I recommend [git cloning](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this entire repository and navigating into it by running these commands in the terminal:
+
+```
+git clone https://github.com/tobiasgeron/coordinate_matching.git
+cd flexAE
+```
+
+and [creating a separate conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) for coordinate_matching and activating it:
+
+```
+conda create --name venv_coordinate_matching python=3.14
+conda activate venv_coordinate_matching
+```
+
+Then run this command to install the correct dependencies:
+
 ```
 pip install -r requirements.txt
 ```
 
-This code was last tested with python 3.14. The core dependencies are astropy, pandas, numpy, matplotlib, tqdm, pytest, and pytest-cov.
+This code was last tested with python 3.14. The main dependencies are astropy, pandas, numpy, matplotlib, tqdm. 
+
 
 ### Calling sequence
 
