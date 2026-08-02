@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 from astropy.coordinates import SkyCoord
 from astropy import units as u
-from tqdm.auto import tqdm
+from tqdm import tqdm
 
 
 ############
