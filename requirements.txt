@@ -2,4 +2,5 @@ astropy==8.0.1
 matplotlib==3.11.1
 numpy==2.5.1
 pandas==3.0.5
+scipy==1.18.0
 tqdm==4.70.0
